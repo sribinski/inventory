@@ -9,19 +9,19 @@ inventory: List[InventoryItem] = [
 ]
 
 def total_items(inventory: List[InventoryItem]) -> int:
-    # TODO: sumar stock
+    # Total stock sum
     return sum(p["stock"] for p in inventory)
 
 def total_value(inventory: List[InventoryItem]) -> float:
-    # TODO: sumar price * stock
+    # Total inventory sum: ∑ price * stock
     return sum(p["price"] * p["stock"] for p in inventory)
 
 def top_by_stock(inventory: List[InventoryItem]) -> InventoryItem:
-    # TODO: devolver el dict con mayor stock
+    # Product with maximum stock
     return max(inventory, key=lambda p: p["stock"])
 
 def top_by_price(inventory: List[InventoryItem]) -> InventoryItem:
-    # TODO: devolver el dict con mayor price
+    # Product with maximum price
     return max(inventory, key=lambda p: p["price"])
 
 def show_inventory(inventory: List[InventoryItem]) -> None:
@@ -32,7 +32,6 @@ def show_inventory(inventory: List[InventoryItem]) -> None:
         print(f"{prefix}{p['name']}: {p['stock']:,.0f} units - ${p['price']:,.2f}/unit")
 
 def print_report(inventory: List[InventoryItem]) -> None:
-    # TODO: imprimir resumen con:
     if not inventory:
         print("Inventory is empty.")
         return
@@ -50,7 +49,7 @@ def print_report(inventory: List[InventoryItem]) -> None:
     print(f"The top by price is {top_price['name']} (${top_price['price']:,.2f})")
 
 def apply_discount(inventory: List[InventoryItem], threshold: float = 1000, pct: float = 0.10) -> None:
-    # TODO: si price > threshold, aplicar descuento (in-place)
+    # Apply discount if price > threshold
     print("Product discount")
     print("----------------")
     for p in inventory:
@@ -61,7 +60,7 @@ def apply_discount(inventory: List[InventoryItem], threshold: float = 1000, pct:
             print(f"The final price for {p['name']} is ${p['price']:,.2f}")
 
 def print_sorted_by_stock(inventory: List[InventoryItem]) -> None:
-    # TODO: imprimir inventario ordenado por stock desc
+    # Print inventory sorted in descending order by stock
     print("Sorted by stock ")
     print("----------------")
     s= sorted(inventory, key=lambda p: p["stock"], reverse=True)
@@ -70,7 +69,7 @@ def print_sorted_by_stock(inventory: List[InventoryItem]) -> None:
     print()
 
 def print_sorted_by_price(inventory: List[InventoryItem]) -> None:
-    # TODO: imprimir inventario ordenado por price desc
+    # Print inventory sorted in descending order by price
     print("Sorted by price ")
     print("----------------")
     s= sorted(inventory, key=lambda p: p["price"], reverse=True)
@@ -78,6 +77,7 @@ def print_sorted_by_price(inventory: List[InventoryItem]) -> None:
         print(f"There are {p['stock']:,.0f} units of {p['name']} for ${p['price']:,.2f}")
 
 def add_product(inventory: List[InventoryItem]) -> None:
+    # Add new product
     while True:
         name = input("Enter the product name: ")
         if any(p['name'].lower() == name.lower() for p in inventory):
@@ -106,6 +106,7 @@ def add_product(inventory: List[InventoryItem]) -> None:
     inventory.append(new_product)
 
 def remove_product(inventory: List[InventoryItem]) -> None:
+    # Remove an exist product
     if not inventory:
         print("Inventory is empty.")
         return
@@ -140,6 +141,7 @@ def remove_product(inventory: List[InventoryItem]) -> None:
         inventory.pop(op)
 
 def update_price(inventory: List[InventoryItem]) -> None:
+    # Update the price of an existing product
     if not inventory:
         print("Inventory is empty.")
         return
@@ -174,6 +176,7 @@ def update_price(inventory: List[InventoryItem]) -> None:
     inventory[op]['price'] = new_price
 
 def update_stock(inventory: List[InventoryItem]) -> None:
+    # Update stock of an existing product
     if not inventory:
         print("Inventory is empty.")
         return
@@ -203,7 +206,7 @@ def update_stock(inventory: List[InventoryItem]) -> None:
         except ValueError:
             print("Please enter a valid number.")
     inventory[op]['stock'] = new_stock
-
+# main code
 menu_items= [
     "Show inventory",
     "Add product",
@@ -271,4 +274,5 @@ while True:
                 print()
             break
     continue
+
     
