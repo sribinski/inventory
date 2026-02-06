@@ -3,6 +3,7 @@
 A simple command-line inventory management program built as part of my self-learning path in Python.  
 It focuses on clean logic, type hints, modular functions, and user input validation.
 
+The project evolved from a single-file script into a small modular CLI application through refactoring and design improvements.
 ---
 
 ## 🚀 Features
@@ -22,7 +23,15 @@ It focuses on clean logic, type hints, modular functions, and user input validat
 - Error handling and user input validation
 - Small, single-responsibility functions
 - Working with modular and readable code
+- Separation of concerns (UI vs operations vs data)
+- Refactoring techniques (extract function, DRY)
+- Guard clauses and fail-fast design
+- Passing functions as parameters (Callable)
 
 ---
 
 ## 📂 File Structure
+- `inventory.py` — Main entry point and menu orchestration
+- `ui.py` — User interaction helpers (input, print, validation)
+- `inventory_ops.py` — Inventory operations (update price/stock using shared helpers)
+- `inventory_types.py` — Shared type definitions for inventory items
