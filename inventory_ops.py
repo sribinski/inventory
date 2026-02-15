@@ -16,11 +16,8 @@ def update_stock(inventory: List[InventoryItem]) -> None:
     _update_numeric_field(inventory,"stock",prompt_new_stock)
 
 def _update_numeric_field(inventory: List[InventoryItem], field_name: str, prompt_fn: Callable[[str], int | float]) -> None:
-    if not inventory:
-        print("Inventory is empty.")
-        return
     print_inventory_list(inventory)
-    select_index = choose_product_index(inventory, field_name)
+    select_index = choose_product_index(inventory)
     product_name = inventory[select_index]['name']
     new_value = prompt_fn(product_name)
     inventory[select_index][field_name] = new_value

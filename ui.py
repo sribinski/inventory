@@ -1,11 +1,11 @@
 from typing import List
 from inventory_types import InventoryItem
 
-def choose_product_index(inventory: List[InventoryItem], attribute: str) -> int:
+def choose_product_index(inventory: List[InventoryItem]) -> int:
     max_choice = len(inventory)
     while True:
         try:  
-            choice = int(input(f"Please choose the product to update the {attribute}: "))
+            choice = int(input(f"Please choose the product: "))
             if choice <= 0 or choice > max_choice:
                 print(f"Please enter a number between 1 and {max_choice}")
                 continue
