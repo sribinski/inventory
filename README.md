@@ -35,3 +35,4 @@ The project evolved from a single-file script into a small modular CLI applicati
 - `ui.py` — User interaction helpers (input, print, validation)
 - `inventory_ops.py` — Inventory operations (update price/stock using shared helpers)
 - `inventory_types.py` — Shared type definitions for inventory items
+- `storage.py` — Handles data persistence and JSON file operations
