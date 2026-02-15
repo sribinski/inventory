@@ -1,29 +1,32 @@
 from typing import List
 from inventory_types import InventoryItem
 from inventory_ops import update_price, update_stock
-from ui import print_inventory_list
+from ui import print_inventory_list, choose_product_index
+from storage import load_inventory, save_inventory
+import os
 
-
-inventory: List[InventoryItem] = [
-    {"name": "Laptop" , "price": 1500, "stock": 10},
-    {"name": "Smartphone", "price": 900.58, "stock": 6},
-    {"name": "TV", "price": 400, "stock": 22}
-]
+os.makedirs("data", exist_ok=True)
+FILE_PATH = "data/inventory.json"
+try:
+    inventory = load_inventory(FILE_PATH)
+except ValueError:
+    print(f"⚠️  Damaged file: backup created. Initializing with empty database! ")
+    inventory = []
 
 def total_items(inventory: List[InventoryItem]) -> int:
-    # TODO: sumar stock
     return sum(p["stock"] for p in inventory)
 
 def total_value(inventory: List[InventoryItem]) -> float:
-    # TODO: sumar price * stock
     return sum(p["price"] * p["stock"] for p in inventory)
 
-def top_by_stock(inventory: List[InventoryItem]) -> InventoryItem:
-    # TODO: devolver el dict con mayor stock
+def top_by_stock(inventory: List[InventoryItem]) -> InventoryItem | None:
+    if not inventory:
+        return None
     return max(inventory, key=lambda p: p["stock"])
 
-def top_by_price(inventory: List[InventoryItem]) -> InventoryItem:
-    # TODO: devolver el dict con mayor price
+def top_by_price(inventory: List[InventoryItem]) -> InventoryItem| None:
+    if not inventory:
+        return None
     return max(inventory, key=lambda p: p["price"])
 
 def show_inventory(inventory: List[InventoryItem]) -> None:
@@ -33,7 +36,6 @@ def show_inventory(inventory: List[InventoryItem]) -> None:
     print_inventory_list(inventory, title = "Current Inventory")
 
 def print_report(inventory: List[InventoryItem]) -> None:
-    # TODO: imprimir resumen con:
     if not inventory:
         print("Inventory is empty.")
         return
@@ -50,19 +52,36 @@ def print_report(inventory: List[InventoryItem]) -> None:
     top_price = top_by_price(inventory)
     print(f"The top by price is {top_price['name']} (${top_price['price']:,.2f})")
 
-def apply_discount(inventory: List[InventoryItem], threshold: float = 1000, pct: float = 0.10) -> None:
-    # TODO: si price > threshold, aplicar descuento (in-place)
-    print("Product discount")
-    print("----------------")
-    for p in inventory:
-        if p["price"] > threshold:
-            discount = p['price']*pct
-            p["price"] -= discount
-            print(f"The discount for {p['name']} is ${discount:.2f}")
-            print(f"The final price for {p['name']} is ${p['price']:,.2f}")
+def apply_discount(inventory: List[InventoryItem],) -> None:
+    if not inventory:
+        print("Inventory is empty.")
+        return    
+    print_inventory_list(inventory)
+    select_index = choose_product_index(inventory)
+    while True:
+        try:
+            pct = float(input(f"What is the percentage of discount that do you want to apply?: "))
+            if pct < 0 or pct > 100:
+                print("Percentage must be between 0 and 100!")
+                continue
+            break
+        except ValueError:
+            print("Please enter a valid number.")
+    discount = inventory[select_index]['price']*pct/100
+    new_price = inventory[select_index]['price'] - discount
+    print(f"The discount for {inventory[select_index]['name']} is ${discount:.2f}")
+    print(f"The final price for {inventory[select_index]['name']} is ${new_price:,.2f}")
+    while True:
+        confirmation = input(f"Are you sure to apply {pct}% to {inventory[select_index]['name']}? (Yes/No): ").strip().lower()
+        print()
+        if confirmation not in {'yes','no'}:
+            print("Please enter 'Yes' or 'No'")
+            continue
+        break    
+    if confirmation == 'yes':
+        inventory[select_index]['price'] -= discount
 
 def print_sorted_by_stock(inventory: List[InventoryItem]) -> None:
-    # TODO: imprimir inventario ordenado por stock desc
     print("Sorted by stock ")
     print("----------------")
     s= sorted(inventory, key=lambda p: p["stock"], reverse=True)
@@ -71,7 +90,6 @@ def print_sorted_by_stock(inventory: List[InventoryItem]) -> None:
     print()
 
 def print_sorted_by_price(inventory: List[InventoryItem]) -> None:
-    # TODO: imprimir inventario ordenado por price desc
     print("Sorted by price ")
     print("----------------")
     s= sorted(inventory, key=lambda p: p["price"], reverse=True)
@@ -111,29 +129,16 @@ def remove_product(inventory: List[InventoryItem]) -> None:
         print("Inventory is empty.")
         return
     print_inventory_list(inventory)
+    select_index = choose_product_index(inventory)
     while True:
-        try:  
-            option = int(input("Please choose the product to remove: "))
-            max_option = len(inventory)
-            if option <= 0:
-                print("Option must be positive!")
-                continue
-            elif option > max_option:
-                print(f"Please enter option between 1 to {max_option}")
-                continue
-            break
-        except ValueError:
-            print("Please enter a valid number.")
-    op = option-1
-    while True:
-        confirmation = input(f"Are you sure to remove {inventory[op]['name']}? (Yes/No): ").strip().lower()
+        confirmation = input(f"Are you sure to remove {inventory[select_index]['name']}? (Yes/No): ").strip().lower()
         print()
         if confirmation not in {'yes','no'}:
             print("Please enter 'Yes' or 'No'")
             continue
         break    
     if confirmation == 'yes':
-        inventory.pop(op)
+        inventory.pop(select_index)
 
 menu_items= [
     "Show inventory",
@@ -170,17 +175,22 @@ while True:
         except ValueError:
             print("Please enter a valid number.")
     if option == 0:
+        save_inventory(inventory,FILE_PATH)
         exit()
     if option == 1:
         show_inventory(inventory)
     elif option == 2:
         add_product(inventory)
+        save_inventory(inventory,FILE_PATH)
     elif option == 3:
         remove_product(inventory)
+        save_inventory(inventory,FILE_PATH)
     elif option == 4:
         update_price(inventory)
+        save_inventory(inventory,FILE_PATH)
     elif option == 5:
         update_stock(inventory)
+        save_inventory(inventory,FILE_PATH)
     elif option == 6:
         print_report(inventory)
     elif option == 7:
@@ -189,6 +199,7 @@ while True:
         print_sorted_by_price(inventory)
     elif option == 9:
         apply_discount(inventory)
+        save_inventory(inventory,FILE_PATH)
     print()
     if option != 1:
         while True:
