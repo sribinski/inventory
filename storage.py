@@ -1,16 +1,25 @@
 import json
-from inventory_types import InventoryItem
+from inventory_types import Product
 from typing import List
 from pathlib import Path
 
-def save_inventory(inventory: List[InventoryItem], path: str) -> None:
+def save_inventory(inventory: List[Product], path: str) -> None:
+    save_list = []
+    for p in inventory:
+        prod = p.to_dict()
+        save_list.append(prod)
     with open(path, 'w') as file:
-        json.dump(inventory,file,indent=4)
+        json.dump(save_list,file,indent=4)
 
-def load_inventory(path: str) -> List[InventoryItem]:
+def load_inventory(path: str) -> List[Product]:
     try:
         with open(path, 'r') as file:
-            return json.load(file)
+            raw_data = json.load(file)
+            inventory_list = []
+            for i in raw_data:
+                prod = Product(i['name'], i['price'], i['stock'])
+                inventory_list.append(prod)
+            return inventory_list
     except FileNotFoundError:
         return []
     except json.decoder.JSONDecodeError:

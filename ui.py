@@ -1,7 +1,7 @@
 from typing import List
-from inventory_types import InventoryItem
+from inventory_types import Product
 
-def choose_product_index(inventory: List[InventoryItem]) -> int:
+def choose_product_index(inventory: List[Product]) -> int:
     max_choice = len(inventory)
     while True:
         try:  
@@ -39,7 +39,7 @@ def prompt_new_stock(product_name: str) -> int:
             print("Please enter a whole number.")
     return new_stock
 
-def print_inventory_list(inventory: List[InventoryItem], title: str = "Product List") -> None:
+def print_inventory_list(inventory: List[Product], title: str = "Product List") -> None:
     if not inventory:
         print("Inventory is empty.")
         return
@@ -47,5 +47,5 @@ def print_inventory_list(inventory: List[InventoryItem], title: str = "Product L
     print("---------------")
     for i, p in enumerate(inventory, start=1):
         prefix = f"{i}) "
-        print(f"{prefix}{p['name']}: {p['stock']:,.0f} units - ${p['price']:,.2f}/unit")
+        print(f"{prefix}{p.name}: {p.stock:,.0f} units - ${p.price:,.2f}/unit")
     print()

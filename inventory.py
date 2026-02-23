@@ -1,5 +1,5 @@
 from typing import List
-from inventory_types import InventoryItem
+from inventory_types import Product
 from inventory_ops import update_price, update_stock
 from ui import print_inventory_list, choose_product_index
 from storage import load_inventory, save_inventory
@@ -13,29 +13,29 @@ except ValueError:
     print(f"⚠️  Damaged file: backup created. Initializing with empty database! ")
     inventory = []
 
-def total_items(inventory: List[InventoryItem]) -> int:
-    return sum(p["stock"] for p in inventory)
+def total_items(inventory: List[Product]) -> int:
+    return sum(p.stock for p in inventory)
 
-def total_value(inventory: List[InventoryItem]) -> float:
-    return sum(p["price"] * p["stock"] for p in inventory)
+def total_value(inventory: List[Product]) -> float:
+    return sum(p.price * p.stock for p in inventory)
 
-def top_by_stock(inventory: List[InventoryItem]) -> InventoryItem | None:
+def top_by_stock(inventory: List[Product]) -> Product | None:
     if not inventory:
         return None
-    return max(inventory, key=lambda p: p["stock"])
+    return max(inventory, key=lambda p: p.stock)
 
-def top_by_price(inventory: List[InventoryItem]) -> InventoryItem| None:
+def top_by_price(inventory: List[Product]) -> Product| None:
     if not inventory:
         return None
-    return max(inventory, key=lambda p: p["price"])
+    return max(inventory, key=lambda p: p.price)
 
-def show_inventory(inventory: List[InventoryItem]) -> None:
+def show_inventory(inventory: List[Product]) -> None:
     if not inventory:
         print("Inventory is empty.")
         return
     print_inventory_list(inventory, title = "Current Inventory")
 
-def print_report(inventory: List[InventoryItem]) -> None:
+def print_report(inventory: List[Product]) -> None:
     if not inventory:
         print("Inventory is empty.")
         return
@@ -47,12 +47,12 @@ def print_report(inventory: List[InventoryItem]) -> None:
     print(f"The total inventory value is ${total_value(inventory):,.2f}")
     # - Top by stock
     top_stock = top_by_stock(inventory)
-    print(f"The top by stock is {top_stock['name']} ({top_stock['stock']:,.0f} units)")
+    print(f"The top by stock is {top_stock.name} ({top_stock.stock:,.0f} units)")
     # - Top by price
     top_price = top_by_price(inventory)
-    print(f"The top by price is {top_price['name']} (${top_price['price']:,.2f})")
+    print(f"The top by price is {top_price.name} (${top_price.price:,.2f})")
 
-def apply_discount(inventory: List[InventoryItem],) -> None:
+def apply_discount(inventory: List[Product],) -> None:
     if not inventory:
         print("Inventory is empty.")
         return    
@@ -67,39 +67,39 @@ def apply_discount(inventory: List[InventoryItem],) -> None:
             break
         except ValueError:
             print("Please enter a valid number.")
-    discount = inventory[select_index]['price']*pct/100
-    new_price = inventory[select_index]['price'] - discount
-    print(f"The discount for {inventory[select_index]['name']} is ${discount:.2f}")
-    print(f"The final price for {inventory[select_index]['name']} is ${new_price:,.2f}")
+    discount = inventory[select_index].price*pct/100
+    new_price = inventory[select_index].price - discount
+    print(f"The discount for {inventory[select_index].name} is ${discount:.2f}")
+    print(f"The final price for {inventory[select_index].name} is ${new_price:,.2f}")
     while True:
-        confirmation = input(f"Are you sure to apply {pct}% to {inventory[select_index]['name']}? (Yes/No): ").strip().lower()
+        confirmation = input(f"Are you sure to apply {pct}% to {inventory[select_index].name}? (Yes/No): ").strip().lower()
         print()
         if confirmation not in {'yes','no'}:
             print("Please enter 'Yes' or 'No'")
             continue
         break    
     if confirmation == 'yes':
-        inventory[select_index]['price'] -= discount
+        inventory[select_index].price -= discount
 
-def print_sorted_by_stock(inventory: List[InventoryItem]) -> None:
+def print_sorted_by_stock(inventory: List[Product]) -> None:
     print("Sorted by stock ")
     print("----------------")
-    s= sorted(inventory, key=lambda p: p["stock"], reverse=True)
+    s= sorted(inventory, key=lambda p: p.stock, reverse=True)
     for p in s:
-        print(f"There are {p['stock']:,.0f} units of {p['name']} for ${p['price']:,.2f}")
+        print(f"There are {p.stock:,.0f} units of {p.name} for ${p.price:,.2f}")
     print()
 
-def print_sorted_by_price(inventory: List[InventoryItem]) -> None:
+def print_sorted_by_price(inventory: List[Product]) -> None:
     print("Sorted by price ")
     print("----------------")
-    s= sorted(inventory, key=lambda p: p["price"], reverse=True)
+    s= sorted(inventory, key=lambda p: p.price, reverse=True)
     for p in s:
-        print(f"There are {p['stock']:,.0f} units of {p['name']} for ${p['price']:,.2f}")
+        print(f"There are {p.stock:,.0f} units of {p.name} for ${p.price:,.2f}")
 
-def add_product(inventory: List[InventoryItem]) -> None:
+def add_product(inventory: List[Product]) -> None:
     while True:
         name = input("Enter the product name: ")
-        if any(p['name'].lower() == name.lower() for p in inventory):
+        if any(p.name.lower() == name.lower() for p in inventory):
             print("Product already exists.")
             continue
         break
@@ -121,17 +121,17 @@ def add_product(inventory: List[InventoryItem]) -> None:
             break
         except ValueError:
             print("Please enter a valid number. Use dot(.) for decimal numbers")
-    new_product = {"name": name, "price": price, "stock": stock}
-    inventory.append(new_product)
+    new_prod = Product(name, price, stock)
+    inventory.append(new_prod)
 
-def remove_product(inventory: List[InventoryItem]) -> None:
+def remove_product(inventory: List[Product]) -> None:
     if not inventory:
         print("Inventory is empty.")
         return
     print_inventory_list(inventory)
     select_index = choose_product_index(inventory)
     while True:
-        confirmation = input(f"Are you sure to remove {inventory[select_index]['name']}? (Yes/No): ").strip().lower()
+        confirmation = input(f"Are you sure to remove {inventory[select_index].name}? (Yes/No): ").strip().lower()
         print()
         if confirmation not in {'yes','no'}:
             print("Please enter 'Yes' or 'No'")
