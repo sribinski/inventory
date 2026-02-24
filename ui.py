@@ -5,7 +5,7 @@ def choose_product_index(inventory: List[Product]) -> int:
     max_choice = len(inventory)
     while True:
         try:  
-            choice = int(input(f"Please choose the product: "))
+            choice = int(input(f"Please choose the option: "))
             if choice <= 0 or choice > max_choice:
                 print(f"Please enter a number between 1 and {max_choice}")
                 continue
@@ -47,5 +47,5 @@ def print_inventory_list(inventory: List[Product], title: str = "Product List") 
     print("---------------")
     for i, p in enumerate(inventory, start=1):
         prefix = f"{i}) "
-        print(f"{prefix}{p.name}: {p.stock:,.0f} units - ${p.price:,.2f}/unit")
+        print(f"{prefix}Category: {p.category} - {p.name}: {p.stock:,.0f} units - ${p.price:,.2f}/unit")
     print()

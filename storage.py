@@ -15,9 +15,14 @@ def load_inventory(path: str) -> List[Product]:
     try:
         with open(path, 'r') as file:
             raw_data = json.load(file)
-            inventory_list = []
+            new_key = "category"
             for i in raw_data:
-                prod = Product(i['name'], i['price'], i['stock'])
+                if i.get(new_key) is None:
+                    i[new_key] = "none"
+            inventory_list = []
+            print(raw_data)
+            for i in raw_data:
+                prod = Product(i['category'],i['name'], i['price'], i['stock'])
                 inventory_list.append(prod)
             return inventory_list
     except FileNotFoundError:

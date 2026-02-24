@@ -97,6 +97,24 @@ def print_sorted_by_price(inventory: List[Product]) -> None:
         print(f"There are {p.stock:,.0f} units of {p.name} for ${p.price:,.2f}")
 
 def add_product(inventory: List[Product]) -> None:
+    if not inventory:
+        print("Inventory is empty.")
+        category = input("Enter the new product category: ")
+    else:
+        print_inventory_list(inventory)
+        while True:
+            ans = input("Do you want to choose some current category? (Yes/No): ").strip().lower()
+            print()
+            if ans not in {'yes','no'}:
+                print("Please enter 'Yes' or 'No'")
+                continue
+            break    
+        if ans == 'yes':
+            select_index = choose_product_index(inventory)
+            category = inventory[select_index].category
+        elif ans == 'no':
+            category = input("Enter the new product category: ")
+
     while True:
         name = input("Enter the product name: ")
         if any(p.name.lower() == name.lower() for p in inventory):
@@ -121,7 +139,7 @@ def add_product(inventory: List[Product]) -> None:
             break
         except ValueError:
             print("Please enter a valid number. Use dot(.) for decimal numbers")
-    new_prod = Product(name, price, stock)
+    new_prod = Product(category, name, price, stock)
     inventory.append(new_prod)
 
 def remove_product(inventory: List[Product]) -> None:

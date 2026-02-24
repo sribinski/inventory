@@ -1,6 +1,7 @@
 
 class Product:
-    def __init__(self, name: str, price: float, stock: int):
+    def __init__(self, category: str, name: str, price: float, stock: int):
+        self.category = category
         self.name = name
         self.price = price
         self.stock = stock
@@ -11,4 +12,4 @@ class Product:
         if new_price > 0:
             self.price = new_price
     def to_dict(self) -> dict:
-        return {"name": self.name, "price": self.price, "stock": self.stock}
+        return {"category": self.category, "name": self.name, "price": self.price, "stock": self.stock}
